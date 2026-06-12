@@ -1,0 +1,39 @@
+/* RTL Support for Arabic Language */
+
+/* Global RTL adjustments */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Flip margins and paddings */
+[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+[dir="rtl"] .pl-4 { padding-left: 0; padding-right: 1rem; }
+[dir="rtl"] .pr-4 { padding-right: 0; padding-left: 1rem; }
+
+/* Flip flex direction */
+[dir="rtl"] .flex-row { flex-direction: row-reverse; }
+
+/* Flip borders */
+[dir="rtl"] .border-l-4 { border-left: 0; border-right-width: 4px; }
+[dir="rtl"] .border-r { border-right: 0; border-left-width: 1px; }
+
+/* Flip sidebar position */
+[dir="rtl"] .fixed.left-0 { left: auto; right: 0; }
+[dir="rtl"] .ml-64 { margin-left: 0; margin-right: 16rem; }
+
+/* Flip text alignment */
+[dir="rtl"] .text-left { text-align: right; }
+[dir="rtl"] .text-right { text-align: left; }
+
+/* Keep Arabic text RTL even in LTR mode */
+[lang="ar"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Rotate icons for RTL */
+[dir="rtl"] .rotate-rtl {
+  transform: scaleX(-1);
+}

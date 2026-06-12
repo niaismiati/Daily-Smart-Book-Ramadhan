@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Amiri+Quran&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap');
+
+/* Arabic Text Styling */
+[lang="ar"], [dir="rtl"] {
+  font-family: 'Amiri', 'Amiri Quran', serif;
+  line-height: 2.2;
+  letter-spacing: 0.02em;
+  text-align: right;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Responsive Arabic Text */
+@media (max-width: 768px) {
+  [lang="ar"], [dir="rtl"] {
+    font-size: 1.75rem;
+    line-height: 2;
+  }
+}
