@@ -7,7 +7,9 @@ export interface User {
   nip: string | null;
   class: string | null;
   phone: string | null;
+  photo_url?: string | null;
 }
+
 
 export interface AuthResponse {
   message: string;
@@ -174,32 +176,4 @@ export interface DoaRecap {
   progress_percentage: number;
 }
 
-export interface StudentDashboardData {
-  today_prayer: number;
-  week_percentage: number;
-  streak: number;
-  total_points: number;
-  sholat_points: number;
-  materi_points: number;
-  quiz_points: number;
-  jurnal_points: number;
-  total_journals: number;
-  total_materials_read: number;
-  total_quiz_taken: number;
-  avg_quiz_score: number;
-  last_quiz_score: number | null;
-  quiz_available: number;
-  sholat_subuh: number;
-  sholat_dzuhur: number;
-  sholat_ashar: number;
-  sholat_maghrib: number;
-  sholat_isya: number;
-  friday_attendance: number;
-  total_doa_learned: number;
-  total_doa_materials: number;
-  weekly_progress: number[];
-  reading_points: number;
-  recent_materials: any[];
-  prayer_schedule: any;
-  notifications: any[];
-}
+
