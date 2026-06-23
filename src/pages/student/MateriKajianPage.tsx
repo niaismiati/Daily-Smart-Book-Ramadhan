@@ -38,11 +38,14 @@ export function MateriKajianPage() {
   };
 
   const handleRead = async (material: any) => {
-    try {
-      await materialsApi.markAsRead(material.id);
-      setReadIds((prev) => [...new Set([...prev, material.id])]);
-    } catch { }
     setSelectedMaterial(material);
+  };
+
+  const handleMarkAsRead = async (materialId: number) => {
+    try {
+      await materialsApi.markAsRead(materialId);
+      setReadIds((prev) => [...new Set([...prev, materialId])]);
+    } catch { }
   };
 
   const getIcon = (type: string) => {
@@ -113,26 +116,52 @@ export function MateriKajianPage() {
 
             {selectedMaterial.type === 'video' && selectedMaterial.video_url && (
               <div className="aspect-video rounded-xl overflow-hidden mb-4">
-                <iframe src={selectedMaterial.video_url} className="w-full h-full" allowFullScreen></iframe>
+                <iframe src={selectedMaterial.video_url} className="w-full h-full" allowFullScreen onLoad={() => handleMarkAsRead(selectedMaterial.id)}></iframe>
               </div>
             )}
 
-            {selectedMaterial.type === 'pdf' && selectedMaterial.file_url && (
-              <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl mb-4">
-                <FileText className="w-8 h-8 text-primary" />
-                <div><p className="font-semibold text-foreground">{t.pdfFile}</p><a href={selectedMaterial.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">{t.openFile} <ExternalLink className="w-3 h-3 inline" /></a></div>
-              </div>
+            {selectedMaterial.type === 'pdf' && (
+              selectedMaterial.file_url ? (
+                <div className="mb-4">
+                  <div className="rounded-xl overflow-hidden border border-border" style={{ height: '500px' }}>
+                    <iframe
+                      src={selectedMaterial.file_url}
+                      className="w-full h-full"
+                      title={selectedMaterial.title}
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 mt-3">
+                    <a
+                      href={selectedMaterial.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => handleMarkAsRead(selectedMaterial.id)}
+                      className="flex items-center gap-2 text-sm text-primary hover:underline font-semibold"
+                    >
+                      <ExternalLink className="w-4 h-4" /> {t.openFile} (Tab Baru)
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl mb-4">
+                  <FileText className="w-8 h-8 text-muted-foreground" />
+                  <div>
+                    <p className="font-semibold text-foreground">{t.pdfFile}</p>
+                    <p className="text-sm text-muted-foreground">File PDF belum tersedia</p>
+                  </div>
+                </div>
+              )
             )}
 
             {selectedMaterial.type === 'article' && selectedMaterial.file_url && (
               <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl mb-4">
                 <BookOpen className="w-8 h-8 text-primary" />
-                <div><p className="font-semibold text-foreground">{t.articleType}</p><a href={selectedMaterial.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">{t.readFull} <ExternalLink className="w-3 h-3 inline" /></a></div>
+                <div><p className="font-semibold text-foreground">{t.articleType}</p><a href={selectedMaterial.file_url} target="_blank" rel="noopener noreferrer" onClick={() => handleMarkAsRead(selectedMaterial.id)} className="text-sm text-primary hover:underline">{t.readFull} <ExternalLink className="w-3 h-3 inline" /></a></div>
               </div>
             )}
 
             {selectedMaterial.type === 'image' && selectedMaterial.file_url && (
-              <img src={selectedMaterial.file_url} alt={selectedMaterial.title} className="w-full rounded-xl mb-4" />
+              <img src={selectedMaterial.file_url} alt={selectedMaterial.title} className="w-full rounded-xl mb-4" onLoad={() => handleMarkAsRead(selectedMaterial.id)} />
             )}
           </div>
         </div>

@@ -6,6 +6,7 @@ import * as prayerApi from '../../api/prayer';
 import * as fridayApi from '../../api/friday';
 import * as sermonApi from '../../api/sermon';
 import type { PrayerTracking, ShalatKey, SermonTopic } from '../../types';
+import { formatDateLocal } from '../../utils/date';
 
 const PRAYER_LIST: { key: ShalatKey; label: string; icon: string }[] = [
   { key: 'subuh', label: 'Shalat Subuh', icon: '🌅' },
@@ -28,12 +29,13 @@ export function TrackerPage() {
     lesson: string;
   }>({ sudahJumat: false, khatibName: '', sermonTopicId: null, summary: '', lesson: '' });
   const [sermonTopics, setSermonTopics] = useState<SermonTopic[]>([]);
+  const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const dateStr = selectedDate.toISOString().split('T')[0];
+  const dateStr = formatDateLocal(selectedDate);
   const isFriday = selectedDate.getDay() === 5;
 
   useEffect(() => {
@@ -43,14 +45,31 @@ export function TrackerPage() {
   const loadData = async () => {
     setLoading(true);
     setError('');
+    if (!user) { setError('User tidak terautentikasi.'); setLoading(false); return; }
     try {
-      const [prayerRes, fridayRes, topicsRes] = await Promise.all([
-        prayerApi.getPrayerTracking(dateStr),
+      const thirtyDaysAgo = new Date(selectedDate);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const fromStr = formatDateLocal(thirtyDaysAgo);
+
+      const [prayerRes, fridayRes, topicsRes, historyRes] = await Promise.all([
+        prayerApi.getPrayerTracking(user.id, dateStr),
         fridayApi.getFridayPrayer(dateStr),
         sermonApi.getActiveTopics(),
+        prayerApi.getPrayerHistory(user.id, fromStr, dateStr),
       ]);
       setTracking(prayerRes.tracking);
       setSermonTopics(topicsRes.topics);
+
+      const sorted = (historyRes.trackings || []).sort((a, b) => a.date.localeCompare(b.date));
+      let consecutive = 0;
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        const t = sorted[i];
+        const allChecked = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya']
+          .every((p) => t[`${p}_checked` as keyof PrayerTracking] as boolean);
+        if (allChecked) consecutive++;
+        else break;
+      }
+      setStreak(consecutive);
 
       if (fridayRes.friday_prayer) {
         setJumatData({
@@ -71,10 +90,10 @@ export function TrackerPage() {
   };
 
   const handleToggleShalat = async (key: ShalatKey) => {
-    if (!tracking) return;
+    if (!tracking || !user) return;
     const current = tracking[`${key}_checked` as keyof PrayerTracking] as boolean;
     try {
-      const res = await prayerApi.updatePrayer(dateStr, key, !current);
+      const res = await prayerApi.updatePrayer(user.id, dateStr, key, !current);
       setTracking(res.tracking);
     } catch {
       setError('Gagal menyimpan data shalat.');
@@ -82,8 +101,10 @@ export function TrackerPage() {
   };
 
   const handleBerjamaah = async (key: ShalatKey, value: boolean) => {
+    if (!tracking || !user) return;
+    const checked = tracking[`${key}_checked` as keyof PrayerTracking] as boolean;
     try {
-      const res = await prayerApi.updatePrayer(dateStr, key, true, value);
+      const res = await prayerApi.updatePrayer(user.id, dateStr, key, checked, value);
       setTracking(res.tracking);
     } catch {
       setError('Gagal menyimpan status berjamaah.');
@@ -91,9 +112,10 @@ export function TrackerPage() {
   };
 
   const handleJumatToggle = async (checked: boolean) => {
-    setJumatData((prev) => ({ ...prev, sudahJumat: checked }));
     if (!checked) {
       setJumatData({ sudahJumat: false, khatibName: '', sermonTopicId: null, summary: '', lesson: '' });
+    } else {
+      setJumatData((prev) => ({ ...prev, sudahJumat: true }));
     }
   };
 
@@ -206,31 +228,31 @@ export function TrackerPage() {
         <div className="bg-card rounded-3xl border border-border p-6 shadow-lg">
           <h3 className="text-lg font-bold text-foreground mb-4">Pencapaian</h3>
           <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-accent/10 rounded-xl border border-accent/20">
-              <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center">
+            <div className={`flex items-center gap-3 p-3 rounded-xl border ${streak >= 7 ? 'bg-accent/10 border-accent/20' : 'bg-muted opacity-50'}`}>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${streak >= 7 ? 'bg-accent' : 'bg-gray-400'}`}>
                 <Trophy className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="font-semibold text-foreground text-sm">Konsisten 7 Hari</p>
-                <p className="text-xs text-muted-foreground">Unlocked</p>
+                <p className="text-xs text-muted-foreground">{streak >= 7 ? 'Unlocked' : `Locked (${streak}/7)`}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-xl border border-primary/20">
-              <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+            <div className={`flex items-center gap-3 p-3 rounded-xl border ${streak >= 15 ? 'bg-primary/10 border-primary/20' : 'bg-muted opacity-50'}`}>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${streak >= 15 ? 'bg-primary' : 'bg-gray-400'}`}>
                 <Star className="w-6 h-6 text-white fill-white" />
               </div>
               <div>
                 <p className="font-semibold text-foreground text-sm">Konsisten 15 Hari</p>
-                <p className="text-xs text-muted-foreground">Unlocked</p>
+                <p className="text-xs text-muted-foreground">{streak >= 15 ? 'Unlocked' : `Locked (${streak}/15)`}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-muted rounded-xl opacity-50">
-              <div className="w-12 h-12 bg-gray-400 rounded-xl flex items-center justify-center">
+            <div className={`flex items-center gap-3 p-3 rounded-xl border ${streak >= 30 ? 'bg-primary/10 border-primary/20' : 'bg-muted opacity-50'}`}>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${streak >= 30 ? 'bg-primary' : 'bg-gray-400'}`}>
                 <Award className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="font-semibold text-foreground text-sm">Konsisten 30 Hari</p>
-                <p className="text-xs text-muted-foreground">Locked</p>
+                <p className="text-xs text-muted-foreground">{streak >= 30 ? 'Unlocked' : `Locked (${streak}/30)`}</p>
               </div>
             </div>
           </div>

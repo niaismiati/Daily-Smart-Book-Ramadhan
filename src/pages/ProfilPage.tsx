@@ -1,7 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { User, Camera, Save, Lock, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import type { AxiosError } from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import * as authApi from '../api/auth';
+
+type ProfileError = { message?: string };
+
 
 function NotificationToast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   useEffect(() => {
@@ -43,10 +47,11 @@ export function ProfilPage() {
   };
 
   const handleUpdateProfile = async () => {
+    if (!user) return;
     if (!profile.name.trim()) { showNotification('Nama tidak boleh kosong', 'error'); return; }
     setSaving(true);
     try {
-      const res = await authApi.updateProfile(profile);
+      const res = await authApi.updateProfile(user.id, profile);
       updateUser(res.user);
       showNotification('Profil berhasil diperbarui!', 'success');
     } catch {
@@ -55,6 +60,7 @@ export function ProfilPage() {
       setSaving(false);
     }
   };
+
 
   const handleChangePassword = async () => {
     if (!passwords.current_password) { showNotification('Password saat ini wajib diisi', 'error'); return; }

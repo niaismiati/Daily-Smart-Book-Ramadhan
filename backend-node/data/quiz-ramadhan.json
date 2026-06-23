@@ -1,0 +1,140 @@
+{
+  "quiz": {
+    "title": "Kuis Ramadhan Seru! 🌙",
+    "description": "10 soal seru tentang Ramadhan untuk anak SD kelas 4-6. Siap jadi juara?",
+    "time_limit": 15,
+    "passing_score": 70
+  },
+  "questions": [
+    {
+      "question_text": "🌙 Soal 1: Apa rukun puasa yang PALING utama?",
+      "emoji": "🌙",
+      "topic": "Rukun Puasa",
+      "points": 1,
+      "answers": [
+        { "text": "A. Makan sahur sebelum subuh", "is_correct": false },
+        { "text": "B. Niat puasa di malam hari", "is_correct": true },
+        { "text": "C. Berbuka saat adzan maghrib", "is_correct": false },
+        { "text": "D. Shalat Tarawih setiap malam", "is_correct": false }
+      ],
+      "explanation": "Niat puasa harus diucapkan di malam hari sebelum subuh! Tanpa niat, puasa kita tidak sah lho. Fakta seru: Niat puasa Ramadhan cukup di dalam hati, tapi kalau diucapkan juga tidak apa-apa. Yang penting ada di malam hari sebelum waktu subuh! 🌙"
+    },
+    {
+      "question_text": "🌙 Soal 2: Kapan waktu yang BENAR untuk berbuka puasa?",
+      "emoji": "🌅",
+      "topic": "Rukun Puasa",
+      "points": 1,
+      "answers": [
+        { "text": "A. Saat matahari tepat di atas kepala", "is_correct": false },
+        { "text": "B. Saat adzan Maghrib berkumandang", "is_correct": true },
+        { "text": "C. Saat langit mulai gelap", "is_correct": false },
+        { "text": "D. Tunggu sampai Isya", "is_correct": false }
+      ],
+      "explanation": "Waktu berbuka puasa adalah saat adzan Maghrib! Jadi tepat saat matahari terbenam. Fakta seru: Rasulullah shallallahu 'alaihi wasallam bersabda: 'Jika ada di antara kalian yang berpuasa, maka berbukalah ketika waktu berbuka (adzan Maghrib).' (HR. Tirmidzi) ⏰"
+    },
+    {
+      "question_text": "🍽️ Soal 3: Makanan apa yang PALING bagus untuk sahur?",
+      "emoji": "🍞",
+      "topic": "Makanan Sahur Sehat",
+      "points": 1,
+      "answers": [
+        { "text": "A. Mie instan dan es teh manis", "is_correct": false },
+        { "text": "B. Roti gandum, telur, dan susu", "is_correct": true },
+        { "text": "C. Kentang goreng dan ayam goreng", "is_correct": false },
+        { "text": "D. Permen dan cokelat saja", "is_correct": false }
+      ],
+      "explanation": "Makanan bergizi seperti roti gandum, telur, dan susu adalah pilihan terbaik untuk sahur! Makanan ini memberikan energi yang tahan lama. Fakta seru: Rasulullah shallallahu 'alaihi wasallam makan kurma dan minum susu saat sahur. Kurma adalah makanan favorit beliau! 🥛"
+    },
+    {
+      "question_text": "🍽️ Soal 4: Minuman apa yang sebaiknya DIHINDARI saat sahur?",
+      "emoji": "🥤",
+      "topic": "Makanan Sahur Sehat",
+      "points": 1,
+      "answers": [
+        { "text": "A. Air putih hangat", "is_correct": false },
+        { "text": "B. Susu hangat", "is_correct": false },
+        { "text": "C. Es kopi dingin dan minuman bersoda", "is_correct": true },
+        { "text": "D. Jus buah segar", "is_correct": false }
+      ],
+      "explanation": "Es kopi dan minuman bersoda sebaiknya dihindari saat sahur karena bisa membuat kita cepat haus! Kopi mengandung kafein yang bersifat diuretik (sering pipis). Fakta seru: Minuman bersoda bisa bikin perut kembung dan tidak nyaman saat puasa. Lebih baik minum air putih yang banyak! 💧"
+    },
+    {
+      "question_text": "✨ Soal 5: Amalan apa yang PALING dianjurkan saat Ramadhan?",
+      "emoji": "📖",
+      "topic": "Amalan Baik",
+      "points": 1,
+      "answers": [
+        { "text": "A. Bermain game seharian", "is_correct": false },
+        { "text": "B. membaca Al-Quran dan bersedekah", "is_correct": true },
+        { "text": "C. Tidur seharian", "is_correct": false },
+        { "text": "D. Menonton TV seharian", "is_correct": false }
+      ],
+      "explanation": "Membaca Al-Quran dan bersedekah adalah amalan yang paling dianjurkan saat Ramadhan! Bahkan, pahala membaca satu huruf Al-Quran dilipat gandakan. Fakta seru: Rasulullah shallallahu 'alaihi wasallam adalah orang yang paling dermawan, dan semakin dermawan saat Ramadhan! Beliau seperti angin yang membawa kebaikan. 💝"
+    },
+    {
+      "question_text": "✨ Soal 6: Berapa kali shalat Tarawih yang dianjurkan?",
+      "emoji": "🕌",
+      "topic": "Amalan Baik",
+      "points": 1,
+      "answers": [
+        { "text": "A. 8 rakaat", "is_correct": false },
+        { "text": "B. 12 rakaat", "is_correct": false },
+        { "text": "C. 20 rakaat", "is_correct": true },
+        { "text": "D. 40 rakaat", "is_correct": false }
+      ],
+      "explanation": "Shalat Tarawih yang dianjurkan adalah 20 rakaat! Ini sesuai dengan apa yang dilakukan Rasulullah shallallahu 'alaihi wasallam. Fakta seru: Nabi Muhammad shallallahu 'alaihi wasallam bersabda: 'Barangsiapa yang shalat (Tarawih) bersama imam sampai selesai, maka ditulis untuknya pahala qiyamul lail (shalat malam) yang sempurna.' (HR. Tirmidzi) 🌟"
+    },
+    {
+      "question_text": "✨ Soal 7: Apa nama malam yang LEBIH BAIK dari 1000 bulan?",
+      "emoji": "⭐",
+      "topic": "Amalan Baik",
+      "points": 1,
+      "answers": [
+        { "text": "A. Malam Jumat", "is_correct": false },
+        { "text": "B. Malam Nisfu Sya'ban", "is_correct": false },
+        { "text": "C. Lailatul Qadar", "is_correct": true },
+        { "text": "D. Malam Isra Mi'raj", "is_correct": false }
+      ],
+      "explanation": "Malam Lailatul Qadar adalah malam yang lebih baik dari 1000 bulan! Artinya, kalau kita beribadah di malam Lailatul Qadar, pahalanya seperti beribadah selama 83 tahun lebih! Fakta seru: Malam Lailatul Qadar terjadi di 10 malam terakhir Ramadhan, biasanya di malam-malam ganjil. Jangan lewatkan ya! 🌟"
+    },
+    {
+      "question_text": "📖 Soal 8: Nabi apa yang berpuasa selama 3 hari setiap bulan?",
+      "emoji": "🧔",
+      "topic": "Kisah Nabi",
+      "points": 1,
+      "answers": [
+        { "text": "A. Nabi Ibrahim", "is_correct": false },
+        { "text": "B. Nabi Musa", "is_correct": true },
+        { "text": "C. Nabi Isa", "is_correct": false },
+        { "text": "D. Nabi Nuh", "is_correct": false }
+      ],
+      "explanation": "Nabi Musa 'alaihissalam berpuasa 3 hari setiap bulannya! Ini karena Nabi Musa pernah berbicara 40 hari berturut-turut di Gunung Tursina, dan ia merasa lemah karena tidak berpuasa. Fakta seru: Rasulullah shallallahu 'alaihi wasallam juga berpuasa Senin-Kamis, sama seperti Nabi Musa! Jadi kita bisa ikut sunnah berpuasa dua hari ini juga. 🌙"
+    },
+    {
+      "question_text": "📖 Soal 9: Nabi apa yang DITELAN ikan paus (ikan besar)?",
+      "emoji": "🐋",
+      "topic": "Kisah Nabi",
+      "points": 1,
+      "answers": [
+        { "text": "A. Nabi Yunus", "is_correct": true },
+        { "text": "B. Nabi Ayyub", "is_correct": false },
+        { "text": "C. Nabi Dawud", "is_correct": false },
+        { "text": "D. Nabi Sulaiman", "is_correct": false }
+      ],
+      "explanation": "Nabi Yunus 'alaihissalam adalah nabi yang ditelan ikan paus besar! Ketika Nabi Yunus meninggalkan kaumnya karena marah, Allah mengujinya dengan ditelan ikan paus. Fakta seru: Di dalam perut ikan paus, Nabi Yunus berdoa: 'La ilaha illa Anta, Subhanaka, inni kuntu minadz dzalimin.' (Tidak ada Tuhan selain Engkau, Maha Suci Engkau, sesungguhnya aku termasuk orang yang zalim). Doa ini bisa kita baca saat kesulitan! 🐋"
+    },
+    {
+      "question_text": "🌙 Soal 10: Berapa lama umat Islam berpuasa saat Ramadhan?",
+      "emoji": "📅",
+      "topic": "Rukun Puasa",
+      "points": 1,
+      "answers": [
+        { "text": "A. 27 hari", "is_correct": false },
+        { "text": "B. 29 atau 30 hari", "is_correct": true },
+        { "text": "C. 31 hari", "is_correct": false },
+        { "text": "D. 40 hari", "is_correct": false }
+      ],
+      "explanation": "Umat Islam berpuasa selama 29 atau 30 hari saat Ramadhan! Lamanya Ramadhan tergantung pada bulan Qamariyah (penanggalan hijriah). Fakta seru: Bulan Ramadhan bisa 29 atau 30 hari karena siklus bulan. Jika melihat hilal (bulan sabit muda) pada malam ke-29, maka Ramadhan 30 hari. Jika tidak, maka 29 hari. Inilah yang disebut 'rukya' (pengamalan hilal)! 🌙"
+    }
+  ]
+}

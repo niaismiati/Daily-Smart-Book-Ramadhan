@@ -128,7 +128,6 @@ export function LaporanSiswaPage() {
       // Save PDF
       doc.save(`laporan_ramadan_${user?.name || 'saya'}_${Date.now()}.pdf`);
     } catch (e) {
-      console.error('PDF export error:', e);
       setError('Gagal mengekspor PDF. Coba lagi.');
     } finally {
       setExporting(false);

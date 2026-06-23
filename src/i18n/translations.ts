@@ -28,6 +28,10 @@ export interface Translations {
   teacher: string;
   welcomeBack: string;
   loginCredentials: string;
+  nisField: string;
+  nipField: string;
+  nisPlaceholder: string;
+  nipPlaceholder: string;
 
   // Dashboard
   dashboard: string;
@@ -365,6 +369,10 @@ export const translations: Record<Language, Translations> = {
     teacher: 'Guru',
     welcomeBack: 'Selamat Datang',
     loginCredentials: 'Kredensial Demo',
+    nisField: 'NIS / NISN',
+    nipField: 'NIP',
+    nisPlaceholder: 'Masukkan NIS / NISN',
+    nipPlaceholder: 'Masukkan NIP',
 
     // Dashboard
     dashboard: 'Dashboard',
@@ -698,6 +706,10 @@ export const translations: Record<Language, Translations> = {
     teacher: 'Teacher',
     welcomeBack: 'Welcome Back',
     loginCredentials: 'Demo Credentials',
+    nisField: 'Student ID',
+    nipField: 'Teacher ID',
+    nisPlaceholder: 'Enter Student ID',
+    nipPlaceholder: 'Enter Teacher ID',
 
     // Dashboard
     dashboard: 'Dashboard',
@@ -1031,6 +1043,10 @@ export const translations: Record<Language, Translations> = {
     teacher: 'معلم',
     welcomeBack: 'مرحباً بعودتك',
     loginCredentials: 'بيانات الاختبار',
+    nisField: 'رقم الطالب',
+    nipField: 'رقم المعلم',
+    nisPlaceholder: 'أدخل رقم الطالب',
+    nipPlaceholder: 'أدخل رقم المعلم',
 
     // Dashboard
     dashboard: 'لوحة التحكم',

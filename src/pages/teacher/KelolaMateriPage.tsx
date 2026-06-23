@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, Upload, Check, FileText, Video, Image as ImageIcon, Link } from 'lucide-react';
 import * as materialsApi from '../../api/materials';
-import type { Material } from '../../types';
+import type { Material } from '../../api/materials';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export function KelolaMateriPage() {
@@ -42,6 +42,7 @@ export function KelolaMateriPage() {
 
   const handleSave = async () => {
     if (!form.title) { setError(t.titleRequired); return; }
+    if (form.type === 'pdf' && !form.file_url) { setError('File PDF wajib diunggah atau masukkan URL file.'); return; }
     setError('');
     try {
       const payload = { ...form, category_id: form.category_id || undefined };
@@ -65,8 +66,15 @@ export function KelolaMateriPage() {
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
-    try { const res = await materialsApi.uploadFile(file); setForm((f) => ({ ...f, file_url: res.url })); }
-    catch { setError(t.errorUploadFile); }
+    try {
+      setSuccess('Mengunggah file...');
+      const res = await materialsApi.uploadFile(file);
+      setForm((f) => ({ ...f, file_url: res.url }));
+      setSuccess('File berhasil diunggah!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch {
+      setError(t.errorUploadFile);
+    }
   };
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
@@ -112,13 +120,13 @@ export function KelolaMateriPage() {
             <div className="md:col-span-2"><label className="block text-sm font-semibold text-muted-foreground mb-2">{t.description}</label><textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} className="w-full px-4 py-3 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring h-24 resize-none" placeholder={t.descriptionPlaceholder} /></div>
             <div><label className="block text-sm font-semibold text-muted-foreground mb-2">{t.typeLabel}</label>
               <div className="flex gap-2">
-                {(['article', 'pdf', 'video', 'image'] as const).map((t) => (
-                  <button key={t} onClick={() => setForm((f) => ({ ...f, type: t }))} className={`flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${form.type === t ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border text-muted-foreground hover:bg-secondary/60'}`}>
-                    {t === 'article' && <FileText className="w-4 h-4" />}
-                    {t === 'pdf' && <FileText className="w-4 h-4" />}
-                    {t === 'video' && <Video className="w-4 h-4" />}
-                    {t === 'image' && <ImageIcon className="w-4 h-4" />}
-                    {t === 'article' ? t.articleType : t === 'pdf' ? 'PDF' : t === 'video' ? 'Video' : 'Gambar'}
+                {(['article', 'pdf', 'video', 'image'] as const).map((typeOption) => (
+                  <button key={typeOption} onClick={() => setForm((f) => ({ ...f, type: typeOption }))} className={`flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${form.type === typeOption ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border text-muted-foreground hover:bg-secondary/60'}`}>
+                    {typeOption === 'article' && <FileText className="w-4 h-4" />}
+                    {typeOption === 'pdf' && <FileText className="w-4 h-4" />}
+                    {typeOption === 'video' && <Video className="w-4 h-4" />}
+                    {typeOption === 'image' && <ImageIcon className="w-4 h-4" />}
+                    {typeOption === 'article' ? t.articleType : typeOption === 'pdf' ? 'PDF' : typeOption === 'video' ? 'Video' : 'Gambar'}
                   </button>
                 ))}
               </div>

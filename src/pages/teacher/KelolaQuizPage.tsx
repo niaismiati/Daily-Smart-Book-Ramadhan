@@ -3,18 +3,36 @@ import { Plus, Edit2, Trash2, Check, Eye, HelpCircle } from 'lucide-react';
 import * as quizzesApi from '../../api/quizzes';
 import { useLanguage } from '../../i18n/LanguageContext';
 
+interface QuizItem {
+  id: number; title: string; description?: string; time_limit: number;
+  passing_score: number; is_active: boolean; questions_count?: number;
+  creator?: { id: number; name: string }; created_at: string;
+}
+
+interface QuestionItem {
+  id: number; quiz_id: number; question_text: string; points: number;
+  answers: { id: number; answer_text: string; is_correct: boolean }[];
+}
+
+interface QuizResultItem {
+  id: number; user_id: number; quiz_id: number; score: number;
+  total_questions: number; correct_answers: number; passed?: boolean;
+  user?: { id: number; name: string; class?: string };
+  quiz?: { id: number; title: string; passing_score: number };
+}
+
 export function KelolaQuizPage() {
   const { t } = useLanguage();
-  const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({ title: '', description: '', time_limit: 10, passing_score: 70 });
-  const [selectedQuiz, setSelectedQuiz] = useState<any>(null);
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [selectedQuiz, setSelectedQuiz] = useState<QuizItem | null>(null);
+  const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [showQuestionForm, setShowQuestionForm] = useState(false);
   const [qForm, setQForm] = useState({ question_text: '', points: 1, answers: [{ answer_text: '', is_correct: false }, { answer_text: '', is_correct: false }] });
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<QuizResultItem[]>([]);
   const [showResults, setShowResults] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -46,7 +64,7 @@ export function KelolaQuizPage() {
   };
 
   const resetForm = () => { setShowForm(false); setEditingId(null); setForm({ title: '', description: '', time_limit: 10, passing_score: 70 }); setError(''); };
-  const handleEdit = (q: any) => { setEditingId(q.id); setForm({ title: q.title, description: q.description || '', time_limit: q.time_limit, passing_score: q.passing_score }); setShowForm(true); };
+  const handleEdit = (q: QuizItem) => { setEditingId(q.id); setForm({ title: q.title, description: q.description || '', time_limit: q.time_limit, passing_score: q.passing_score }); setShowForm(true); };
 
   const handleSave = async () => {
     if (!form.title) { setError(t.titleRequired); return; }
@@ -162,10 +180,10 @@ export function KelolaQuizPage() {
                         <p className="font-semibold text-foreground">{t.question} {i + 1}: {q.question_text}</p>
                         <p className="text-xs text-muted-foreground">{t.pointsLabel} {q.points}</p>
                       </div>
-                      <button onClick={async () => { await quizzesApi.deleteQuestion(q.id); await loadQuizDetail(quiz.id); }} className="p-1 text-destructive"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={async () => { if (!confirm(t.confirmDelete)) return; await quizzesApi.deleteQuestion(q.id); await loadQuizDetail(quiz.id); }} className="p-1 text-destructive"><Trash2 className="w-4 h-4" /></button>
                     </div>
                     <div className="mt-2 space-y-1">
-                      {q.answers.map((a: any) => (
+                      {q.answers.map((a: { id: number; answer_text: string; is_correct: boolean }) => (
                         <p key={a.id} className={`text-sm px-3 py-1 rounded-lg ${a.is_correct ? 'bg-primary/10 text-primary font-semibold' : 'text-muted-foreground'}`}>
                           {a.is_correct ? '\u2713 ' : ''}{a.answer_text}
                         </p>

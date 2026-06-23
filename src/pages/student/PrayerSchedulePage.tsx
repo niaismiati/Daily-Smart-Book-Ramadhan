@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Clock, MapPin, Sun, Moon, Sunrise, Sunset, Navigation, ChevronDown } from 'lucide-react';
+import { getTodayStr } from '../../utils/date';
 
 const prayerIcons: Record<string, any> = {
   imsak: Clock, subuh: Sunrise, dzuhur: Sun, ashar: Sun, maghrib: Sunset, isya: Moon,
@@ -121,7 +122,7 @@ export function PrayerSchedulePage() {
   const { t } = useLanguage();
   const [schedules, setSchedules] = useState<{ name: string; time: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(getTodayStr());
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [lat, setLat] = useState<number | null>(null);
