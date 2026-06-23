@@ -1,88 +1,78 @@
-# ✅ PERBAIKAN ERROR SELESAI
+# Cara Testing Aplikasi Setelah Deployment
 
-## Masalah yang Ditemukan:
+## 🚀 Langkah-langkah Setup Database
 
-### 1. **Closing Tag Berlebih di Baris 584**
-```tsx
-// ❌ SEBELUM (SALAH)
-</div></div>  // Double closing tag
+Aplikasi ini membutuhkan **MySQL database** cloud gratis. Ikuti langkah berikut:
 
-// ✅ SESUDAH (BENAR)
-</div>        // Single closing tag
+### **Opsi 1: Aiven (MySQL gratis)**
+
+1. Buka https://console.aiven.io/signup
+2. Register (pilih free plan)
+3. Create service → **MySQL** → Free plan
+4. Tunggu beberapa menit sampai service ready
+5. Buka tab **Overview**, catat:
+   - **Host** (contoh: `mysql-xxxxx.aivencloud.com`)
+   - **Port** (contoh: `12345`)
+   - **User** (contoh: `avnadmin`)
+   - **Password**
+6. Klik **Download CA Certificate**
+7. Connect ke database:
+   ```
+   mysql -h [HOST] -P [PORT] -u [USER] -p
+   ```
+   Masukkan password, lalu paste isi file `backend-node/migrations.sql`
+
+### **Opsi 2: PlanetScale (MySQL-compatible, gratis)**
+
+1. Buka https://planetscale.com
+2. Login dengan GitHub
+3. Create database → beri nama `smartbook_ramadan`
+4. Di dashboard, buka **Branches** → main → **Connect**
+5. Pilih **Connect with MySQL** → copy connection string
+6. Buka tab Console, paste isi `backend-node/migrations.sql`
+
+---
+
+## ⚙️ Set Environment Variables di Vercel
+
+1. Buka https://vercel.com → dashboard
+2. Pilih project `daily-smart-book-ramadhan`
+3. **Settings** → **Environment Variables**
+4. Tambahkan variabel berikut:
+
+| Name | Value |
+|---|---|
+| `DB_HOST` | Host dari Aiven / PlanetScale |
+| `DB_PORT` | Port (Aiven: 12345, PlanetScale: 3306) |
+| `DB_USER` | Username database |
+| `DB_PASSWORD` | Password database |
+| `DB_NAME` | `smartbook_ramadan` |
+| `JWT_SECRET` | `smartbook_ramadan_secret_key_2024` |
+| `ALLOWED_ORIGINS` | `https://daily-smart-book-ramadhan-b8l5.vercel.app` |
+
+5. Klik **Save**
+6. Redeploy: **Deployments** → ⋮ → **Redeploy**
+
+---
+
+## ✅ Verifikasi
+
+Setelah redeploy selesai, buka https://daily-smart-book-ramadhan-b8l5.vercel.app
+
+- Jika tidak ada "Network Error" lagi → **Berhasil** 🎉
+- Jika masih error, buka **F12** → Console, screenshot errornya, kirim ke saya.
+
+---
+
+## 🐛 Masih Error? Coba ini dulu
+
+Buka URL berikut di browser:
+```
+https://daily-smart-book-ramadhan-b8l5.vercel.app/api/health
 ```
 
-### 2. **Closing Tag Berlebih di Baris 676**
-```tsx
-// ❌ SEBELUM (SALAH)
-</div>
-</div>
-</div>        // Triple closing tag
+- Jika muncul JSON `{ "status": "ok", ... }` → API berjalan ✅
+- Jika error **404** atau **503** → ada masalah konfigurasi Vercel
+- Jika timeout → ada masalah database
 
-// ✅ SESUDAH (BENAR)
-</div>
-</div>        // Double closing tag (sesuai kebutuhan)
-```
-
----
-
-## Struktur Closing Tag yang Benar:
-
-```tsx
-<div className="bg-gradient-to-br...">              // Main container
-  <div className="relative z-10">                   // Z-10 wrapper
-    <div className="flex items-center...">          // Header
-      ...
-    </div>                                           // Close header
-
-    <div className="space-y-6">                     // Content wrapper
-      {/* Dalil cards */}
-      ...
-    </div>                                           // Close content wrapper
-  </div>                                             // Close z-10 wrapper
-</div>                                               // Close main container
-```
-
----
-
-## ✅ Sudah Diperbaiki:
-
-- [x] Menghapus closing tag berlebih di baris 584
-- [x] Menghapus closing tag berlebih di baris 676
-- [x] Memverifikasi struktur closing tag sudah benar
-- [x] Memastikan tidak ada syntax error
-
----
-
-## 🧪 Cara Testing:
-
-1. **Refresh browser** atau restart dev server
-2. **Login sebagai Siswa** (ahmad.fauzan / siswa123)
-3. **Lihat Dashboard** - Section "Edukasi Puasa Ramadan"
-4. **Scroll ke bawah** - Lihat 2 dalil Al-Qur'an dengan teks Arab
-
----
-
-## 📝 Yang Ditampilkan:
-
-✅ **Section Header**: "Edukasi Puasa Ramadan"  
-✅ **Dalil 1**: QS. Al-Baqarah 183 (teks Arab + terjemahan)  
-✅ **Dalil 2**: QS. Al-Baqarah 185 (teks Arab + terjemahan)  
-✅ **Ornamen Islam**: Pola geometris, bulan, bintang  
-✅ **6 Card Materi**: Definisi, Rukun, Syarat, Pembatal, Keutamaan, Hikmah  
-
----
-
-## 🎨 Fitur Visual:
-
-- ✅ Teks Arab ukuran 36px dengan font Amiri
-- ✅ Border emas dan hijau emerald
-- ✅ Icon Al-Qur'an di setiap card dalil
-- ✅ Nomor ayat dalam bahasa Arab
-- ✅ Terjemahan dalam card terpisah
-- ✅ Background pattern geometris Islam
-- ✅ Dekorasi bulan dan bintang dengan animasi
-- ✅ Responsive design untuk semua device
-
----
-
-**Status: ✅ ERROR SUDAH DIPERBAIKI!**
+Kirim screenshot hasilnya ke saya jika masih error.
