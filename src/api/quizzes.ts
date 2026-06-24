@@ -21,11 +21,6 @@ interface QuizResult {
   created_at: string;
 }
 
-function getCurrentUserId(): number {
-  try { const raw = localStorage.getItem('auth_user'); if (raw) return JSON.parse(raw).id || 0; } catch {}
-  return 0;
-}
-
 export async function getQuizzes(): Promise<{ data: Quiz[] }> {
   const { data } = await apiClient.get('/quizzes');
   return { data: data.quizzes || data.data || [] };
@@ -93,19 +88,16 @@ export async function startQuiz(quizId: number): Promise<{
 
 export async function submitQuiz(quizId: number, data: {
   answers: { question_id: number; answer_id: number }[];
-  time_taken: number;
+  time_taken?: number;
 }): Promise<{ message: string; result: QuizResult; passed: boolean }> {
-  const userId = getCurrentUserId();
   const { data: res } = await apiClient.post(`/quizzes/${quizId}/submit`, {
-    user_id: userId,
     answers: data.answers,
     time_taken: data.time_taken,
   });
   return { message: res.message || 'Berhasil', result: res.result, passed: res.passed };
 }
 
-export async function getQuizHistory(): Promise<{ data: QuizResult[] }> {
-  const userId = getCurrentUserId();
+export async function getQuizHistory(userId: number): Promise<{ data: QuizResult[] }> {
   const { data: res } = await apiClient.get(`/quizzes/history/${userId}`);
   return { data: res.results || res.data || [] };
 }

@@ -57,14 +57,16 @@ exports.store = async (req, res) => {
   try {
     const { user_id, date, subuh_checked, subuh_berjamaah, dzuhur_checked, dzuhur_berjamaah, ashar_checked, ashar_berjamaah, maghrib_checked, maghrib_berjamaah, isya_checked, isya_berjamaah } = req.body;
 
-    if (!user_id || !date) {
+    const effectiveUserId = req.user.role === 'guru' ? user_id : req.user.id;
+
+    if (!effectiveUserId || !date) {
       return failure(res, 'user_id dan date wajib diisi', 400);
     }
 
     // Check if exists
     const [existing] = await pool.query(
       'SELECT id FROM prayer_trackings WHERE user_id = ? AND date = ? LIMIT 1',
-      [user_id, date]
+      [effectiveUserId, date]
     );
 
     if (existing.length > 0) {
@@ -84,13 +86,13 @@ exports.store = async (req, res) => {
           ashar_checked || 0, ashar_berjamaah || 0,
           maghrib_checked || 0, maghrib_berjamaah || 0,
           isya_checked || 0, isya_berjamaah || 0,
-          user_id, date,
+          effectiveUserId, date,
         ]
       );
 
       const [updated] = await pool.query(
         'SELECT * FROM prayer_trackings WHERE user_id = ? AND date = ? LIMIT 1',
-        [user_id, date]
+        [effectiveUserId, date]
       );
 
       return success(res, { message: 'Data ibadah berhasil diperbarui', tracking: updated[0] });
@@ -102,7 +104,7 @@ exports.store = async (req, res) => {
        (user_id, date, subuh_checked, subuh_berjamaah, dzuhur_checked, dzuhur_berjamaah, ashar_checked, ashar_berjamaah, maghrib_checked, maghrib_berjamaah, isya_checked, isya_berjamaah, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
-        user_id, date,
+        effectiveUserId, date,
         subuh_checked || 0, subuh_berjamaah || 0,
         dzuhur_checked || 0, dzuhur_berjamaah || 0,
         ashar_checked || 0, ashar_berjamaah || 0,
@@ -136,6 +138,10 @@ exports.update = async (req, res) => {
     }
 
     const current = existing[0];
+
+    if (req.user.role !== 'guru' && current.user_id !== req.user.id) {
+      return failure(res, 'Akses ditolak', 403);
+    }
 
     await pool.query(
       `UPDATE prayer_trackings SET

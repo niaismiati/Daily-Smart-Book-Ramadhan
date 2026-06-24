@@ -51,14 +51,20 @@ app.use(
   })
 );
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // limit each IP to 500 requests per windowMs
-  message: { message: 'Terlalu banyak permintaan, coba lagi nanti' },
-  skip: (req) => req.path.startsWith('/auth/'),
+// Rate limiting — strict for auth, moderate for API
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { message: 'Terlalu banyak percobaan login, coba lagi nanti' },
 });
-app.use('/api/', limiter);
+app.use('/api/auth/', authLimiter);
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  message: { message: 'Terlalu banyak permintaan, coba lagi nanti' },
+});
+app.use('/api/', apiLimiter);
 
 // Body parsing
 app.use(express.json());

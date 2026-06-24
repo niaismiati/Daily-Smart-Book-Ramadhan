@@ -1,30 +1,26 @@
 import axios from 'axios';
 
 const resolveApiBaseUrl = () => {
-  // Di Vercel production, API ada di domain yang sama (relative URL)
   if (import.meta.env.PROD) {
     return '/api';
   }
-  // Di development, gunakan VITE_API_URL atau fallback ke localhost dengan proxy Vite
   const raw = import.meta.env.VITE_API_URL as string | undefined;
-  const fallback = '/api'; // Vite proxy akan handle ini
-  const base = (raw && raw.trim()) ? raw.trim() : fallback;
-  // Pastikan base URL selalu mengandung '/api'
-  return base.endsWith('/api') ? base : base.endsWith('/api/') ? base.slice(0, -1) : (base.includes('/api') ? base : `${base}/api`);
+  if (raw && raw.trim()) {
+    return raw.trim().replace(/\/+$/, ''); // hapus trailing slash saja
+  }
+  return '/api';
 };
 
-const API_BASE_URL = resolveApiBaseUrl();
-
-
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: resolveApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  withCredentials: true,
+  withCredentials: false,
 });
 
+// Tambahkan token ke setiap request
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token');
   if (token) {
@@ -33,16 +29,19 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Interceptor response — auto-unwrap success() wrapper dari backend
 apiClient.interceptors.response.use(
   (response) => {
-    const body = response.data;
-    if (body && typeof body === 'object' && body.success === true && 'data' in body) {
-      response.data = body.data;
+    if (response.data && response.data.success === true && response.data.data !== undefined) {
+      response.data = response.data.data;
     }
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    const isLoginEndpoint = error.config?.url?.includes('/auth/login');
+
+    // Jangan redirect kalau lagi proses login (401 = password salah)
+    if (error.response?.status === 401 && !isLoginEndpoint) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
       window.location.href = '/';

@@ -50,7 +50,9 @@ exports.store = async (req, res) => {
   try {
     const { user_id, date, content, mood } = req.body;
 
-    if (!user_id || !date || !content) {
+    const effectiveUserId = req.user.role === 'guru' ? user_id : req.user.id;
+
+    if (!effectiveUserId || !date || !content) {
       return failure(res, 'user_id, date, dan content wajib diisi', 400);
     }
 
@@ -58,19 +60,19 @@ exports.store = async (req, res) => {
     // Check if exists
     const [existing] = await pool.query(
       'SELECT id FROM journals WHERE user_id = ? AND date = ? LIMIT 1',
-      [user_id, date]
+      [effectiveUserId, date]
     );
 
     if (existing.length > 0) {
       // Update
       await pool.query(
         'UPDATE journals SET content = ?, mood = ?, updated_at = NOW() WHERE user_id = ? AND date = ?',
-        [content, mood || null, user_id, date]
+        [content, mood || null, effectiveUserId, date]
       );
 
       const [updated] = await pool.query(
         'SELECT * FROM journals WHERE user_id = ? AND date = ? LIMIT 1',
-        [user_id, date]
+        [effectiveUserId, date]
       );
 
       return success(res, { message: 'Jurnal berhasil diperbarui', journal: updated[0] });
@@ -81,7 +83,7 @@ exports.store = async (req, res) => {
     const [result] = await pool.query(
       `INSERT INTO journals (user_id, date, content, mood, created_at, updated_at)
        VALUES (?, ?, ?, ?, NOW(), NOW())`,
-      [user_id, date, content, mood || null]
+      [effectiveUserId, date, content, mood || null]
     );
 
     const [inserted] = await pool.query(

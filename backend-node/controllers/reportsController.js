@@ -122,7 +122,13 @@ exports.export = async (req, res) => {
 
   try {
     const { userId } = req.query;
-    const payload = userId ? await getStudentReportData(userId) : { generated_at: new Date().toISOString() };
+
+    if (userId && req.user.role !== 'guru' && parseInt(userId, 10) !== req.user.id) {
+      return failure(res, 'Akses ditolak', 403);
+    }
+
+    const effectiveUserId = userId || req.user.id;
+    const payload = await getStudentReportData(effectiveUserId);
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Content-Disposition', 'attachment; filename="smartbook-report.json"');
     // tetap kirim raw JSON untuk export (kontrak payload di frontend bukan success wrapper)

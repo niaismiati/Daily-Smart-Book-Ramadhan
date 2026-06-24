@@ -29,31 +29,33 @@ exports.toggle = async (req, res) => {
   try {
     const { user_id, doa_material_id, memorized } = req.body;
 
-    if (!user_id || !doa_material_id) {
+    const effectiveUserId = req.user.role === 'guru' ? user_id : req.user.id;
+
+    if (!effectiveUserId || !doa_material_id) {
       return failure(res, 'user_id dan doa_material_id wajib diisi', 400);
     }
 
     // Check if exists
     const [existing] = await pool.query(
       'SELECT id FROM doa_trackings WHERE user_id = ? AND doa_material_id = ? LIMIT 1',
-      [user_id, doa_material_id]
+      [effectiveUserId, doa_material_id]
     );
 
     if (existing.length > 0) {
       await pool.query(
         'UPDATE doa_trackings SET memorized = ?, read_at = IF(? = 1, NOW(), read_at), updated_at = NOW() WHERE user_id = ? AND doa_material_id = ?',
-        [memorized ? 1 : 0, memorized ? 1 : 0, user_id, doa_material_id]
+        [memorized ? 1 : 0, memorized ? 1 : 0, effectiveUserId, doa_material_id]
       );
     } else {
       await pool.query(
         'INSERT INTO doa_trackings (user_id, doa_material_id, memorized, read_at, created_at, updated_at) VALUES (?, ?, ?, IF(? = 1, NOW(), NULL), NOW(), NOW())',
-        [user_id, doa_material_id, memorized ? 1 : 0, memorized ? 1 : 0]
+        [effectiveUserId, doa_material_id, memorized ? 1 : 0, memorized ? 1 : 0]
       );
     }
 
     const [updated] = await pool.query(
       'SELECT * FROM doa_trackings WHERE user_id = ? AND doa_material_id = ? LIMIT 1',
-      [user_id, doa_material_id]
+      [effectiveUserId, doa_material_id]
     );
 
     return success(res, {

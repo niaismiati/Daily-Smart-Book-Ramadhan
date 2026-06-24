@@ -2,7 +2,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/database');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set!');
+  process.exit(1);
+}
 
 exports.me = async (req, res) => {
   try {
@@ -88,8 +92,20 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'Nama, password, dan role wajib diisi' });
     }
 
+    if (name.length > 100) {
+      return res.status(400).json({ message: 'Nama maksimal 100 karakter' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password minimal 6 karakter' });
+    }
+
     if (!['siswa', 'guru'].includes(role)) {
       return res.status(400).json({ message: 'Role harus siswa atau guru' });
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: 'Format email tidak valid' });
     }
 
     // Check if email already exists

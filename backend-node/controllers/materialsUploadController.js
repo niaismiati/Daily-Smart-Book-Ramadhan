@@ -18,7 +18,7 @@ const upload = multer({
     const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx|mp4|webm/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    if (extname || mimetype) {
+    if (extname && mimetype) {
       return cb(null, true);
     }
     cb(new Error('Tipe file tidak diizinkan'));

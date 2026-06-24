@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Clock, Check, X, Award, ArrowLeft } from 'lucide-react';
 import * as quizzesApi from '../../api/quizzes';
 import { useAuth } from '../../contexts/AuthContext';
@@ -20,6 +20,8 @@ export function QuizAttemptPage({ quizId, onBack }: QuizAttemptPageProps) {
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasAutoSubmitted = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -35,13 +37,31 @@ export function QuizAttemptPage({ quizId, onBack }: QuizAttemptPageProps) {
   }, [quizId]);
 
   useEffect(() => {
-    if (!started || submitted || timeLeft <= 0) return;
-    const timer = setInterval(() => setTimeLeft((t) => { if (t <= 1) { clearInterval(timer); return 0; } return t - 1; }), 1000);
-    return () => clearInterval(timer);
-  }, [started, submitted, timeLeft]);
+    if (!started || submitted) return;
+    if (timeLeft <= 0) return;
+    timerRef.current = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          timerRef.current = null;
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [started, submitted]);
 
   useEffect(() => {
-    if (started && timeLeft === 0 && !submitted && quiz) handleSubmit();
+    if (started && timeLeft === 0 && !submitted && quiz && !hasAutoSubmitted.current) {
+      hasAutoSubmitted.current = true;
+      handleSubmit();
+    }
   }, [timeLeft]);
 
   const formatTime = (s: number) => {
@@ -55,7 +75,7 @@ export function QuizAttemptPage({ quizId, onBack }: QuizAttemptPageProps) {
     try {
       const payload = { answers: questions.map((q) => ({ question_id: q.id, answer_id: answers[q.id] || null })) };
       const res = await quizzesApi.submitQuiz(quizId, payload);
-      setResult(res.result || res);
+      setResult({ ...res.result, passed: res.passed });
     } catch { setResult({ score: 0, correct_answers: 0, total_questions: questions.length, message: t.failedToSubmit }); }
   };
 
@@ -84,7 +104,7 @@ export function QuizAttemptPage({ quizId, onBack }: QuizAttemptPageProps) {
   }
 
   if (submitted && result) {
-    const passed = result.score >= (quiz.passing_score || 70);
+    const passed = result.passed ?? (result.score >= (quiz.passing_score || 70));
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <button onClick={onBack} className="flex items-center gap-2 text-muted-foreground hover:text-foreground"><ArrowLeft className="w-4 h-4" /> {t.back}</button>
@@ -112,7 +132,7 @@ export function QuizAttemptPage({ quizId, onBack }: QuizAttemptPageProps) {
             <span className={`font-mono font-bold text-lg ${timeLeft < 60 ? 'text-destructive' : 'text-foreground'}`}>{formatTime(timeLeft)}</span>
           </div>
         )}
-        <div className="text-sm text-muted-foreground">{answers ? Object.keys(answers).length : 0}/{questions.length} {t.answered}</div>
+        <div className="text-sm text-muted-foreground">{Object.keys(answers).length}/{questions.length} {t.answered}</div>
       </div>
 
       {/* Questions */}

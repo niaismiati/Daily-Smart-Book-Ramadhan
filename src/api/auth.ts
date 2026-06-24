@@ -80,12 +80,11 @@ export async function changePassword(userId: number, data: { current_password: s
 export async function uploadPhoto(userId: number, file: File): Promise<{ url: string; message?: string }> {
   const formData = new FormData();
   formData.append('photo', file);
-  const res = await apiClient.post(`/profile/${userId}/photo`, formData, {
+  const res = await apiClient.put(`/profile/${userId}/photo`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   const payload = res.data;
-  const data = payload.data ?? payload;
-  return { url: data.url, message: data.message };
+  return { url: payload.url, message: payload.message };
 }
 
 

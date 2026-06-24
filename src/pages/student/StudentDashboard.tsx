@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { CheckCircle, BookOpen, Award, PenTool, Sparkles, Moon, Clock, Target, BarChart3 } from 'lucide-react';
 import * as dashboardApi from '../../api/dashboard';
 import { useAuth } from '../../contexts/AuthContext';
@@ -40,8 +40,11 @@ export function StudentDashboard() {
   const [stats, setStats] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const loadingRef = useRef(false);
 
   const load = useCallback(async () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     try {
       setLoading(true);
       setError('');
@@ -51,6 +54,7 @@ export function StudentDashboard() {
       setError('Gagal memuat data dashboard');
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
   }, []);
 

@@ -4,7 +4,7 @@ const fridayPrayerController = require('../controllers/fridayPrayerController');
 const { authorize } = require('../middleware/auth');
 
 router.get('/', fridayPrayerController.index);
-router.post('/', fridayPrayerController.store);
+router.post('/', authorize('siswa', 'guru'), fridayPrayerController.store);
 router.put('/:id', authorize('guru'), fridayPrayerController.grade);
 router.delete('/:id', authorize('guru'), fridayPrayerController.destroy);
 

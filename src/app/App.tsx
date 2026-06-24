@@ -39,6 +39,7 @@ function AppContent() {
   const { isAuthenticated, isSiswa, isGuru, loading } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [selectedQuizId, setSelectedQuizId] = useState<number | null>(null);
+  const [pageBeforeQuiz, setPageBeforeQuiz] = useState<Page | null>(null);
 
   useEffect(() => {
     if (currentPage !== 'quiz') setSelectedQuizId(null);
@@ -60,8 +61,11 @@ function AppContent() {
     );
   }
 
-  const handleStartQuiz = (quizId: number) => setSelectedQuizId(quizId);
-  const handleBackFromQuiz = () => { setSelectedQuizId(null); setCurrentPage('quiz'); };
+  const handleStartQuiz = (quizId: number) => {
+    setPageBeforeQuiz(currentPage);
+    setSelectedQuizId(quizId);
+  };
+  const handleBackFromQuiz = () => { setSelectedQuizId(null); setCurrentPage(pageBeforeQuiz || 'dashboard'); };
 
   return (
     <AppLayout currentPage={currentPage} onNavigate={setCurrentPage}>

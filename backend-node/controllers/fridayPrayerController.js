@@ -46,28 +46,30 @@ exports.store = async (req, res) => {
   try {
     const { user_id, date, khatib_name, sermon_topic_id, summary, lesson } = req.body;
 
-    if (!user_id || !date || !khatib_name || !summary) {
+    const effectiveUserId = req.user.role === 'guru' ? user_id : req.user.id;
+
+    if (!effectiveUserId || !date || !khatib_name || !summary) {
       return res.status(400).json({ message: 'user_id, date, khatib_name, dan summary wajib diisi' });
     }
 
     // Check if exists
     const [existing] = await pool.query(
       'SELECT id FROM friday_prayers WHERE user_id = ? AND date = ? LIMIT 1',
-      [user_id, date]
+      [effectiveUserId, date]
     );
 
     if (existing.length > 0) {
       await pool.query(
         'UPDATE friday_prayers SET khatib_name = ?, sermon_topic_id = ?, summary = ?, lesson = ?, updated_at = NOW() WHERE user_id = ? AND date = ?',
-        [khatib_name, sermon_topic_id || null, summary, lesson || null, user_id, date]
+        [khatib_name, sermon_topic_id || null, summary, lesson || null, effectiveUserId, date]
       );
-      const [updated] = await pool.query('SELECT * FROM friday_prayers WHERE user_id = ? AND date = ? LIMIT 1', [user_id, date]);
+      const [updated] = await pool.query('SELECT * FROM friday_prayers WHERE user_id = ? AND date = ? LIMIT 1', [effectiveUserId, date]);
       return res.json({ message: 'Data sholat Jumat berhasil diperbarui', friday_prayer: updated[0] });
     }
 
     const [result] = await pool.query(
       'INSERT INTO friday_prayers (user_id, date, khatib_name, sermon_topic_id, summary, lesson, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())',
-      [user_id, date, khatib_name, sermon_topic_id || null, summary, lesson || null]
+      [effectiveUserId, date, khatib_name, sermon_topic_id || null, summary, lesson || null]
     );
 
     const [inserted] = await pool.query('SELECT * FROM friday_prayers WHERE id = ? LIMIT 1', [result.insertId]);
